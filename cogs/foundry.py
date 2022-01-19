@@ -127,7 +127,10 @@ class Foundry(commands.Cog):
 
         self.cur.execute(f"SELECT world,name FROM 'foundry_worlds' WHERE id = {id};")
         try:
-            row = self.cur.fetchone()
+            if id == 0:
+                row = (None, "Setup")
+            else:
+                row = self.cur.fetchone()
         except:
             message = "Diese Welt ist nicht in der Datenbank vorhanden!"
         else:
@@ -136,19 +139,18 @@ class Foundry(commands.Cog):
             await self.parse_foundry()
             if self.status["world"] == world:
                 message = f"Die Welt **{name}** ist bereits aktiv!"
+            elif (self.status["users"] is not None) and (self.status["users"] >= 1):
+                message = f"Es sind noch Spieler in der aktuellen Welt eingeloggt."
             else:
-                if (self.status["users"] is not None) and (self.status["users"] >= 1):
-                    message = f"Es sind noch Spieler in der aktuellen Welt eingeloggt."
-                else:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
-                        socket.settimeout(30)
-                        socket.connect((HOST, PORT))
-                        socket.sendall(f"setworld {world}".encode())
-                        data = socket.recv(1048576)
-                        message = data.decode()
-                        if message is None:
-                            message = "Das ändern der Welt hat nicht geklappt. Läuft der Socket?"
-                        socket.sendall("exit".encode())
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
+                    socket.settimeout(30)
+                    socket.connect((HOST, PORT))
+                    socket.sendall(f"setworld {world}".encode())
+                    data = socket.recv(1048576)
+                    message = data.decode()
+                    if message is None:
+                        message = "Das ändern der Welt hat nicht geklappt. Läuft der Socket?"
+                    socket.sendall("exit".encode())
         await ctx.channel.send(message)
 
     @commands.command(
@@ -170,7 +172,8 @@ class Foundry(commands.Cog):
         self.cur.execute(f"SELECT id,world,name FROM 'foundry_worlds';")
         rows = self.cur.fetchall()
         message = ""
-        if len(rows) >=1:
+        if len(rows) >= 1:
+            rows.insert(0, (0, "Setup", "Setup"))
             for row in rows:
                 message += f"{row[0]}: {row[1]} -> {row[2]}\n"
         else:

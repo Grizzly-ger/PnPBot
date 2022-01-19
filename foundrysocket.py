@@ -68,7 +68,7 @@ def restart_foundry(user_data_path, world=None):
     else:
         print(f"World {world} doesn't exists! Choose one of the following:")
         print(get_worlds(user_data_path))
-        raise NotFound(f"World {world} doesn't exists! Choose one of the following:\n" + get_worlds(user_data_path))
+        # raise NotFound(f"World {world} doesn't exists! Choose one of the following:\n" + get_worlds(user_data_path))
 
 
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
@@ -97,6 +97,8 @@ elif len(arguments) >= 2:
                             conn.send(get_worlds(USERDATAPATH).encode())
                         elif data.startswith("setworld"):
                             world = data.split(" ")[1]
+                            if world.lower() == "none":
+                                world = None
                             restart_foundry(USERDATAPATH, world)
                             conn.send("Die Welt wurde geändert".encode())
                         elif data == "exit":
