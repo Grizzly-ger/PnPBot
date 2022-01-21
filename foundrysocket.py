@@ -73,8 +73,8 @@ def restart_foundry(user_data_path, world=None):
 
 
 env = dotenv_values(".env")
-HOST = env['SOKETIP']  # Standard loopback interface address (localhost)
-PORT = int(env['SOKETPORT'])  # Port to listen on (non-privileged ports are > 1023)
+HOST = env['SOCKETIP']  # Standard loopback interface address (localhost)
+PORT = int(env['SOCKETPORT'])  # Port to listen on (non-privileged ports are > 1023)
 USERDATAPATH = env['USERDATAPATH']
 
 arguments = sys.argv
