@@ -50,8 +50,8 @@ bot.load_extension("cogs.foundry", extras={
     "sqlitecur": cur,
     "config": config,
     "foundryurl": env['FOUNDRY_URL'],
-    "HOST": env['SOCKETIP'],
-    "PORT": int(env['SOCKETPORT'])
+    "socketip": env['SOCKETIP'],
+    "socketport": int(env['SOCKETPORT'])
 })
 bot.load_extension("cogs.groups", extras={
     "sqlitecon": con,
