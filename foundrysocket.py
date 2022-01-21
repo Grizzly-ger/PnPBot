@@ -6,6 +6,11 @@ import socket
 from tabulate import tabulate
 from dotenv import dotenv_values
 
+env = dotenv_values(".env")
+HOST = env['SOCKETIP']  # Standard loopback interface address (localhost)
+PORT = int(env['SOCKETPORT'])  # Port to listen on (non-privileged ports are > 1023)
+USERDATAPATH = env['USERDATAPATH']
+APPLICATIONPATH = env['APPLICATIONPATH']
 
 def show_help():
     print("Usage:")
@@ -28,6 +33,7 @@ def check_foundry_running():
 def kill_foundry():
     subprocess.call(["screen", "-r", "foundryserver", "-X", "stuff", "'^C'"])
     return
+
 
 def get_worlds(userdatapath):
     folder_scan = os.scandir(userdatapath + "Data/worlds/")
@@ -64,7 +70,7 @@ def restart_foundry(user_data_path, world=None):
             world_parameter = ""
         else:
             world_parameter = f"--world={world}"
-        subprocess.call(["screen", "-dmS", "foundryserver", "node", "/home/christof/foundryvtt/resources/app/main.js",
+        subprocess.call(["screen", "-dmS", "foundryserver", "node", APPLICATIONPATH,
                          f"--dataPath={user_data_path}", world_parameter])
     else:
         print(f"World {world} doesn't exists! Choose one of the following:")
@@ -72,10 +78,6 @@ def restart_foundry(user_data_path, world=None):
         # raise NotFound(f"World {world} doesn't exists! Choose one of the following:\n" + get_worlds(user_data_path))
 
 
-env = dotenv_values(".env")
-HOST = env['SOCKETIP']  # Standard loopback interface address (localhost)
-PORT = int(env['SOCKETPORT'])  # Port to listen on (non-privileged ports are > 1023)
-USERDATAPATH = env['USERDATAPATH']
 
 arguments = sys.argv
 if len(arguments) > 3:
@@ -87,7 +89,7 @@ elif len(arguments) == 1:
 elif len(arguments) >= 2:
     if arguments[1] in ["--socket", "-s"]:
         if not check_foundry_running():
-            restart_foundry(USERDATAPATH, None)
+            restart_foundry(USERDATAPATH)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
             socket.bind((HOST, PORT))
             socket.listen()
@@ -111,7 +113,7 @@ elif len(arguments) >= 2:
         print(get_worlds())
     elif arguments[1] in ["-w", "--world"]:
         try:
-            world=arguments[2]
+            world = arguments[2]
         except:
             print("Please provide a world")
             print(get_worlds(USERDATAPATH))

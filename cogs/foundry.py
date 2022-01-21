@@ -123,7 +123,7 @@ class Foundry(commands.Cog):
     )
     async def change_foundry_world(self, ctx, id: int):
         import socket
-        env = dotenv_values(".env")
+        env = dotenv_values("../.env")
         HOST = env['SOCKETIP']
         PORT = int(env['SOCKETPORT'])
 
