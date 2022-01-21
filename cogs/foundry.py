@@ -124,8 +124,8 @@ class Foundry(commands.Cog):
     async def change_foundry_world(self, ctx, id: int):
         import socket
         env = dotenv_values(".env")
-        HOST = env['SOKETIP']
-        PORT = int(env['SOKETPORT'])
+        HOST = env['SOCKETIP']
+        PORT = int(env['SOCKETPORT'])
 
         self.cur.execute(f"SELECT world,name FROM 'foundry_worlds' WHERE id = {id};")
         try:
