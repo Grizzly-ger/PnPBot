@@ -5,6 +5,7 @@ import json
 import nextcord
 import urllib3
 from bs4 import BeautifulSoup
+from dotenv import dotenv_values
 from nextcord import *
 from nextcord.ext import tasks, commands
 import socket
@@ -40,7 +41,7 @@ class Foundry(commands.Cog):
         if self.status["active"] is None:
             message = "Aktuell ist Foundry nicht erreichbar."
         elif self.status["active"]:
-            message = f"Aktuell ist die Welt **{self.status['world']}** geladen und es sind **{self.status['users']}** online."
+            message = f"Aktuell ist die Welt **{self.status['world']}** geladen und es sind **{self.status['users']}** SpielerInnen online."
         else:
             message = "Aktuell ist keine Welt geladen"
         await ctx.channel.send(message)
@@ -122,8 +123,9 @@ class Foundry(commands.Cog):
     )
     async def change_foundry_world(self, ctx, id: int):
         import socket
-        HOST = '127.0.0.1'
-        PORT = 65432
+        env = dotenv_values(".env")
+        HOST = env['SOKETIP']
+        PORT = int(env['SOKETPORT'])
 
         self.cur.execute(f"SELECT world,name FROM 'foundry_worlds' WHERE id = {id};")
         try:

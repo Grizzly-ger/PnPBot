@@ -4,6 +4,7 @@ import time
 import os
 import socket
 from tabulate import tabulate
+from dotenv import dotenv_values
 
 
 def show_help():
@@ -71,9 +72,10 @@ def restart_foundry(user_data_path, world=None):
         # raise NotFound(f"World {world} doesn't exists! Choose one of the following:\n" + get_worlds(user_data_path))
 
 
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
-USERDATAPATH = "/home/christof/foundrydata/"
+env = dotenv_values(".env")
+HOST = env['SOKETIP']  # Standard loopback interface address (localhost)
+PORT = int(env['SOKETPORT'])  # Port to listen on (non-privileged ports are > 1023)
+USERDATAPATH = env['USERDATAPATH']
 
 arguments = sys.argv
 if len(arguments) > 3:
@@ -84,6 +86,7 @@ elif len(arguments) == 1:
     restart_foundry(USERDATAPATH, world=None)
 elif len(arguments) >= 2:
     if arguments[1] in ["--socket", "-s"]:
+        restart_foundry(USERDATAPATH, None)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
             socket.bind((HOST, PORT))
             socket.listen()
