@@ -5,7 +5,6 @@ import json
 import nextcord
 import urllib3
 from bs4 import BeautifulSoup
-from dotenv import dotenv_values
 from nextcord import *
 from nextcord.ext import tasks, commands
 import socket
@@ -14,11 +13,13 @@ from cogs.settings import Settings
 
 
 class Foundry(commands.Cog):
-    def __init__(self, bot, con, cur, config, foundryurl):
+    def __init__(self, bot, con, cur, config, foundryurl, host, port):
         self.bot = bot
         self.con = con
         self.cur = cur
         self.foundryurl = foundryurl
+        self.HOST = host
+        self.PORT = port
         self.config = config
         self.status = {}
 
@@ -123,9 +124,6 @@ class Foundry(commands.Cog):
     )
     async def change_foundry_world(self, ctx, id: int):
         import socket
-        env = dotenv_values("../.env")
-        HOST = env['SOCKETIP']
-        PORT = int(env['SOCKETPORT'])
 
         self.cur.execute(f"SELECT world,name FROM 'foundry_worlds' WHERE id = {id};")
         try:
@@ -146,7 +144,7 @@ class Foundry(commands.Cog):
             else:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
                     socket.settimeout(30)
-                    socket.connect((HOST, PORT))
+                    socket.connect((self.HOST, self.PORT))
                     socket.sendall(f"setworld {world}".encode())
                     data = socket.recv(1048576)
                     message = data.decode()
@@ -209,4 +207,6 @@ def setup(bot, **extras):
     cur = extras["sqlitecur"]
     config = extras["config"]
     foundryurl = extras["foundryurl"]
-    bot.add_cog(Foundry(bot, con, cur, config, foundryurl))
+    host = extras["socketip"]
+    port = extras["socketport"]
+    bot.add_cog(Foundry(bot, con, cur, config, foundryurl, host, port))

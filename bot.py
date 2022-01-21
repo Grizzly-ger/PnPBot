@@ -49,12 +49,15 @@ bot.load_extension("cogs.foundry", extras={
     "sqlitecon": con,
     "sqlitecur": cur,
     "config": config,
-    "foundryurl": env['FOUNDRY_URL']
+    "foundryurl": env['FOUNDRY_URL'],
+    "HOST": env['SOCKETIP'],
+    "PORT": int(env['SOCKETPORT'])
 })
 bot.load_extension("cogs.groups", extras={
     "sqlitecon": con,
     "sqlitecur": cur,
     "config": config
 })
+
 
 bot.run(env['BOT_TOKEN'])
