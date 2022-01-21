@@ -86,7 +86,8 @@ elif len(arguments) == 1:
     restart_foundry(USERDATAPATH, world=None)
 elif len(arguments) >= 2:
     if arguments[1] in ["--socket", "-s"]:
-        restart_foundry(USERDATAPATH, None)
+        if not check_foundry_running():
+            restart_foundry(USERDATAPATH, None)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket:
             socket.bind((HOST, PORT))
             socket.listen()
