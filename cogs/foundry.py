@@ -186,7 +186,7 @@ class Foundry(commands.Cog):
         urllib3.disable_warnings()
         status = {}
         try:
-            response = http.request('GET', self.foundryurl)
+            response = http.request('GET', self.foundryurl, timeout=5.0)
             soup = BeautifulSoup(response.data, 'html.parser')
             status = json.loads(soup.text)
         except:
